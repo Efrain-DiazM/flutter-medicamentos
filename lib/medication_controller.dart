@@ -8,9 +8,7 @@ import 'package:application_medicines/medication.dart';
 class MedicationController extends GetxController {
   final Databases databases = Databases(AppwriteConfig.getClient());
   final RxList<Medication> medications = <Medication>[].obs;
-
-  // static const String databaseId = '67eb26ad000687003533';
-  // static const String collectionId = '6822894c001afe3fd69a';
+  final RxSet<String> pinnedMedications = <String>{}.obs; 
 
   static final databaseId = dotenv.env['APPWRITE_DATABASE_ID'] ?? ' ';
   static final collectionId = dotenv.env['APPWRITE_COLLECTION_ID'] ?? ' ';
@@ -74,5 +72,25 @@ class MedicationController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
+  }
+
+  void togglePin(String id) {
+    if (pinnedMedications.contains(id)) {
+      pinnedMedications.remove(id); // Desanclar
+    } else {
+      pinnedMedications.add(id); // Anclar
+    }
+    _sortMedications(); // Reordenar la lista
+    medications.refresh(); // Notificar cambios
+  }
+
+  void _sortMedications() {
+    medications.sort((a, b) {
+      final aPinned = pinnedMedications.contains(a.id);
+      final bPinned = pinnedMedications.contains(b.id);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return 0;
+    });
   }
 }

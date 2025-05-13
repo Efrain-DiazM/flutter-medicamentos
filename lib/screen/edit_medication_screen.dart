@@ -35,7 +35,23 @@ class EditMedicationScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {},
+            onPressed: () {
+              Get.defaultDialog(
+                title: 'Eliminar Medicamento',
+                content: const Text('¿Estás seguro de que deseas eliminar este medicamento?'),
+                onCancel: () => Get.back(),
+                onConfirm: () async {
+                  await medicationController.deleteMedication(medicationId);
+                  Get.toNamed('/medications');
+                  // Get.snackbar(
+                  //   'Éxito',
+                  //   'Medicamento eliminado correctamente',
+                  //   snackPosition: SnackPosition.BOTTOM,
+                  // );
+                  // Get.back();
+                },
+              );
+            },
           ),
         ],
       ),

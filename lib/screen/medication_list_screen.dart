@@ -48,13 +48,32 @@ class MedicationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MedicationController medicationController = Get.find<MedicationController>();
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(medication.name),
         subtitle: Text('Dosis: ${medication.dosage}'),
-        trailing: Text(
-          '${medication.time.hour}:${medication.time.minute.toString().padLeft(2, '0')}',
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${medication.time.hour}:${medication.time.minute.toString().padLeft(2, '0')}',
+            ),
+            IconButton(
+              icon: Icon(
+                medicationController.pinnedMedications.contains(medication.id)
+                    ? Icons.push_pin
+                    : Icons.push_pin_outlined,
+                color: medicationController.pinnedMedications.contains(medication.id)
+                    ? Colors.orange
+                    : Colors.grey,
+              ),
+              onPressed: () {
+                medicationController.togglePin(medication.id);
+              },
+            ),
+          ],
         ),
         onTap: () => Get.toNamed('/edit-medication/${medication.id}'),
       ),
